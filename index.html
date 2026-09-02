@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#09090b">
+  <meta name="description" content="GoodBoyGoonsaLot — a modern creative interface for the classic SAM speech synthesizer.">
+  <title>GoodBoyGoonsaLot — SAM Voice Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Creepster&family=Special+Elite&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <div class="ambient ambient-a"></div>
+    <div class="ambient ambient-b"></div>
+
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="GoodBoyGoonsaLot home">
+        <span class="brand-mark" aria-hidden="true">GB</span>
+        <span>
+          <strong>GoodBoyGoonsaLot</strong>
+          <small>SAM VOICE LAB</small>
+        </span>
+      </a>
+      <div class="top-actions">
+        <span class="engine-pill"><i></i> SAM engine · client-side</span>
+        <button id="themeBtn" class="icon-btn" type="button" aria-label="Toggle theme" title="Toggle theme">☼</button>
+        <button id="aboutBtn" class="icon-btn" type="button" aria-label="About and credits" title="About">?</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div>
+          <div class="eyebrow">1982 FORMANT SYNTHESIS · MODERNIZED</div>
+          <h1>Make weird voices.<br><em>Make them yours.</em></h1>
+          <p>GoodBoyGoonsaLot wraps the original SAM formant engine in a modern voice-design workstation. Everything runs locally in your browser.</p>
+        </div>
+        <div class="hero-badge">
+          <span class="pulse-dot"></span>
+          <span id="statusText">Ready to synthesize</span>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <div class="panel composer-panel">
+          <div class="panel-head">
+            <div>
+              <span class="kicker">01 · COMPOSE</span>
+              <h2>Speech input</h2>
+            </div>
+            <div class="head-tools">
+              <select id="language" aria-label="Speech language">
+                <option value="auto">Auto detect · recommended</option>
+                <option value="en">English</option>
+                <option value="hi">Hindi + Hinglish</option>
+                <option value="bn">Bengali · approximate</option>
+                <option value="pa">Punjabi / Gurmukhi · approximate</option>
+                <option value="gu">Gujarati · approximate</option>
+                <option value="ta">Tamil · approximate</option>
+                <option value="te">Telugu · approximate</option>
+                <option value="kn">Kannada · approximate</option>
+                <option value="ml">Malayalam · approximate</option>
+                <option value="es">Spanish · approximate</option>
+                <option value="fr">French · approximate</option>
+                <option value="de">German · approximate</option>
+                <option value="other">Other · approximate</option>
+              </select>
+              <label class="switch-label">
+                <input id="phonetic" type="checkbox">
+                <span class="switch"></span>
+                <span>Phonetic</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="language-note" id="languageNote">SAM's reciter is English-centric. English spelling and phonetic input are the most reliable.</div>
+          <div class="tiny-note" id="detectedLanguage" aria-live="polite"></div>
+          <div class="phoneme-help" id="phonemeHelp" hidden>
+            <div><strong>Phoneme mode is active</strong><span>Use SAM phonemes such as <code>DHAX KAET IHZ AH5GLIY.</code> · stress: <code>1–8</code>. Ordinary words are auto-compiled on Preview.</span></div>
+            <button id="phonemeExample" class="mini-btn" type="button">Insert example</button>
+          </div>
+
+          <textarea id="speechinput" spellcheck="false" maxlength="4000" aria-label="Text or phonemes to synthesize">Hello. I am GoodBoyGoonsaLot — your tiny, gloriously weird speech machine.</textarea>
+          <div class="composer-foot">
+            <span id="charCount">0 / 4000</span>
+            <span class="shortcut-hint"><kbd>Ctrl</kbd><kbd>Enter</kbd> preview</span>
+          </div>
+
+          <div class="transport">
+            <button id="previewBtn" class="primary-btn" type="button"><span>▶</span> Preview</button>
+            <button id="downloadBtn" class="secondary-btn" type="button"><span>↓</span> Download WAV</button>
+            <button id="stopBtn" class="ghost-btn" type="button" disabled><span>■</span> Stop</button>
+          </div>
+
+          <div class="wave-card">
+            <div class="wave-meta"><span>OUTPUT WAVEFORM</span><span id="duration">—</span></div>
+            <canvas id="waveform" height="150" aria-label="Generated audio waveform"></canvas>
+            <div class="wave-placeholder" id="wavePlaceholder">Your generated waveform appears here</div>
+          </div>
+        </div>
+
+        <aside class="panel controls-panel">
+          <div class="panel-head">
+            <div>
+              <span class="kicker">02 · VOICE DESIGN</span>
+              <h2>Character controls</h2>
+            </div>
+            <button id="randomBtn" class="mini-btn" type="button">✦ Randomize</button>
+          </div>
+
+          <div id="controls" class="controls"></div>
+
+          <div class="designer-tools">
+            <div class="section-title">Quick transformations</div>
+            <div class="smart-grid">
+              <button data-smart="creepy">Make it creepier</button>
+              <button data-smart="deep">Make it deeper</button>
+              <button data-smart="high">Make it higher</button>
+              <button data-smart="robot">More robotic</button>
+              <button data-smart="soft">Make it softer</button>
+              <button data-smart="reset">Reset</button>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <section class="panel preset-panel">
+        <div class="panel-head">
+          <div>
+            <span class="kicker">03 · PRESETS</span>
+            <h2>Voice library</h2>
+          </div>
+          <div class="preset-actions">
+            <button id="savePresetBtn" class="mini-btn" type="button">＋ Save preset</button>
+            <button id="exportBtn" class="mini-btn" type="button">Export</button>
+            <label class="mini-btn file-btn">Import <input id="importInput" type="file" accept=".json,application/json"></label>
+          </div>
+        </div>
+        <div id="presetGrid" class="preset-grid"></div>
+      </section>
+
+      <section class="lower-grid">
+        <div class="panel clone-panel">
+          <div class="panel-head">
+            <div>
+              <span class="kicker">04 · CONTENT CLONE</span>
+              <h2>Transcribe &amp; Speak</h2>
+            </div>
+            <span class="beta-pill">WHISPER · OPTIONAL</span>
+          </div>
+          <p class="muted">Upload an MP3/WAV/M4A/etc. and transcribe its spoken content locally in the browser when the Whisper model is available. This copies <strong>words</strong>, not the speaker's identity, timbre or accent.</p>
+          <div class="dropzone" id="dropzone">
+            <input id="audioInput" type="file" accept="audio/*">
+            <div class="drop-icon">↥</div>
+            <strong>Drop an audio file here</strong>
+            <span>or tap to choose · transcription runs client-side</span>
+            <div id="fileName" class="file-name"></div>
+          </div>
+          <div class="progress-wrap" id="transcribeProgressWrap" hidden>
+            <div class="progress-line"><span id="transcribeLabel">Loading transcription model…</span><span id="transcribePct">0%</span></div>
+            <div class="progress"><i id="transcribeBar"></i></div>
+          </div>
+          <div class="clone-actions">
+            <button id="transcribeBtn" class="secondary-btn" type="button" disabled>Transcribe audio</button>
+            <button id="recordBtn" class="ghost-btn" type="button">● Record</button>
+            <button id="micBtn" class="ghost-btn" type="button">Use microphone</button>
+          </div>
+          <p class="tiny-note">For the most reliable recording format, use <strong>Record</strong> here; it creates a browser-native audio blob. Uploaded-file transcription accepts formats your browser can decode. Whisper is loaded only when you start transcription.</p>
+        </div>
+
+        <div class="panel history-panel">
+          <div class="panel-head">
+            <div>
+              <span class="kicker">05 · HISTORY</span>
+              <h2>Recent generations</h2>
+            </div>
+            <button id="clearHistoryBtn" class="mini-btn" type="button">Clear</button>
+          </div>
+          <div id="historyList" class="history-list"></div>
+        </div>
+      </section>
+
+      <section class="panel share-panel">
+        <div>
+          <span class="kicker">06 · SHARE</span>
+          <h2>Take the voice with you</h2>
+          <p class="muted">Copy the current settings as JSON or make a shareable URL containing the voice parameters and text.</p>
+        </div>
+        <div class="share-actions">
+          <button id="copyJsonBtn" class="secondary-btn" type="button">Copy JSON</button>
+          <button id="copyLinkBtn" class="primary-btn" type="button">Copy share link</button>
+        </div>
+      </section>
+
+      <section class="panel fx-panel">
+        <div class="panel-head">
+          <div>
+            <span class="kicker">07 · AUDIO FX LAB</span>
+            <h2>Reshape any audio file</h2>
+          </div>
+          <span class="beta-pill">PITCH · SPEED · TONE</span>
+        </div>
+        <p class="muted">Upload any audio file and reshape it with real pitch, speed, and tone controls — the same Pitch / Speed / Mouth / Throat vocabulary as the voice lab above, including your saved presets. This is separate audio processing, not the SAM engine itself: SAM only speaks from phonemes, it has no way to "listen to" an uploaded file.</p>
+
+        <div class="dropzone" id="fxDropzone">
+          <input id="fxAudioInput" type="file" accept="audio/*">
+          <div class="drop-icon">↥</div>
+          <strong>Drop an audio file here</strong>
+          <span>or tap to choose · mp3, wav, m4a, ogg…</span>
+          <div id="fxFileName" class="file-name"></div>
+        </div>
+
+        <div class="fx-controls" id="fxControls" hidden>
+          <div class="control-row">
+            <div class="control-top">
+              <div><label for="fxPresetSelect">Apply a saved preset</label><div class="control-sub">Maps its pitch/speed/mouth/throat onto this tool</div></div>
+            </div>
+            <select id="fxPresetSelect"><option value="">Choose a preset…</option></select>
+          </div>
+
+          <div class="control-row" data-control="fxPitch">
+            <div class="control-top">
+              <div><label for="fxPitch">Pitch</label><div class="control-sub">Semitones · keeps the original speed</div></div>
+              <input class="number-input" id="fxPitchNumber" type="number" min="-12" max="12" step="1" inputmode="numeric" aria-label="Pitch exact value">
+            </div>
+            <div class="range-wrap"><input id="fxPitch" type="range" min="-12" max="12" step="1" value="0" aria-label="Pitch"/></div>
+          </div>
+
+          <div class="control-row" data-control="fxSpeed">
+            <div class="control-top">
+              <div><label for="fxSpeed">Speed</label><div class="control-sub">Percent of original · keeps the original pitch</div></div>
+              <input class="number-input" id="fxSpeedNumber" type="number" min="50" max="200" step="1" inputmode="numeric" aria-label="Speed exact value">
+            </div>
+            <div class="range-wrap"><input id="fxSpeed" type="range" min="50" max="200" step="1" value="100" aria-label="Speed"/></div>
+          </div>
+
+          <div class="control-row" data-control="fxMouth">
+            <div class="control-top">
+              <div><label for="fxMouth">Mouth</label><div class="control-sub">Mid-tone resonance</div></div>
+              <input class="number-input" id="fxMouthNumber" type="number" min="0" max="255" step="1" inputmode="numeric" aria-label="Mouth exact value">
+            </div>
+            <div class="range-wrap"><input id="fxMouth" type="range" min="0" max="255" step="1" value="128" aria-label="Mouth"/></div>
+          </div>
+
+          <div class="control-row" data-control="fxThroat">
+            <div class="control-top">
+              <div><label for="fxThroat">Throat</label><div class="control-sub">Low-tone resonance</div></div>
+              <input class="number-input" id="fxThroatNumber" type="number" min="0" max="255" step="1" inputmode="numeric" aria-label="Throat exact value">
+            </div>
+            <div class="range-wrap"><input id="fxThroat" type="range" min="0" max="255" step="1" value="128" aria-label="Throat"/></div>
+          </div>
+
+          <div class="transport">
+            <button id="fxPreviewBtn" class="primary-btn" type="button"><span>▶</span> Preview</button>
+            <button id="fxDownloadBtn" class="secondary-btn" type="button"><span>↓</span> Download WAV</button>
+            <button id="fxStopBtn" class="ghost-btn" type="button" disabled><span>■</span> Stop</button>
+          </div>
+
+          <div class="wave-card">
+            <div class="wave-meta"><span id="fxStatusText">Ready</span><span id="fxDuration">—</span></div>
+            <canvas id="fxWaveform" height="150" aria-label="Processed audio waveform"></canvas>
+            <div class="wave-placeholder" id="fxWavePlaceholder">Processed waveform appears here</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>GoodBoyGoonsaLot · SAM Voice Lab</span>
+      <span>Original SAM: Don't Ask Software / SoftVoice · JS lineage: Christian Schiffler, Stefan Macke, Vidar Hokstad, 8BitPimp and contributors</span>
+    </footer>
+  </div>
+
+  <dialog id="aboutDialog">
+    <div class="dialog-head"><div><span class="kicker">ABOUT</span><h2>GoodBoyGoonsaLot</h2></div><button id="closeAbout" class="icon-btn">×</button></div>
+    <p>This interface is a modern creative layer around the existing JavaScript SAM implementation. The formant synthesizer itself has deliberately not been replaced by a neural TTS engine.</p>
+    <p>SAM was originally published in 1982 by Don't Ask Software for the Commodore C64 and is a reverse-engineered speech system. This project preserves the included engine and its documentation/attribution.</p>
+    <p><strong>Important:</strong> Content Clone means speech-to-text → SAM speech. It does not clone a person's voice identity.</p>
+    <button id="closeAbout2" class="primary-btn full" type="button">Got it</button>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
