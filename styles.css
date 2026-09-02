@@ -49,7 +49,10 @@ h1{letter-spacing:1px;animation:fxflicker 7s infinite}
   47%{opacity:1}
   48%{opacity:.8}
   49%{opacity:1}
-  .brand-mark{
+}
+
+/* ===== logo image fix ===== */
+.brand-mark{
   background:transparent;
   box-shadow:none;
   border-radius:0;
@@ -61,5 +64,3 @@ h1{letter-spacing:1px;animation:fxflicker 7s infinite}
   object-fit:contain;
   display:block;
 }
-}
-
